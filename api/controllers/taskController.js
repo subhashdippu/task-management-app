@@ -33,4 +33,33 @@ const getTasks = async (req, res) => {
   }
 };
 
-module.exports = { createTask, getTasks };
+const updateTask = async (req, res) => {
+  try {
+    // console.log("Full Request Params:", req.params);
+    const { id } = req.params;
+    // console.log("Extracted Task ID:", id);
+
+    if (!id) {
+      return res
+        .status(400)
+        .json({ message: "Task ID is missing in the request URL" });
+    }
+
+    const updatedTask = await Task.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
+
+    if (!updatedTask) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    res
+      .status(200)
+      .json({ message: "Task updated successfully", task: updatedTask });
+  } catch (error) {
+    console.error("Error updating task:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+module.exports = { createTask, getTasks, updateTask };
